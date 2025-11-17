@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Input Tracker Dashboard</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 2rem;
+        background: #f4f6fb;
+      }
+      h1 {
+        color: #3f51b5;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+      }
+      th,
+      td {
+        border: 1px solid #ccc;
+        padding: 0.5rem;
+        text-align: left;
+      }
+      th {
+        background: #e8eaf6;
+      }
+      tr:nth-child(even) {
+        background: #fff;
+      }
+      .screenshot {
+        max-width: 160px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Input Tracker Dashboard</h1>
+    <p>Menampilkan event terbaru yang diterima server.</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Timestamp</th>
+          <th>Type</th>
+          <th>Data</th>
+          <th>Window</th>
+          <th>Position</th>
+          <th>Screenshot</th>
+        </tr>
+      </thead>
+      <tbody id="events"></tbody>
+    </table>
+
+    <script>
+      async function loadEvents() {
+        const response = await fetch("/api/events?limit=50");
+        const events = await response.json();
+        const body = document.getElementById("events");
+        body.innerHTML = events
+          .map((event) => {
+            let screenshot = "";
+            if (event.type === "screenshot" && event.data) {
+              screenshot = `<img class="screenshot" src="data:image/${event.format};base64,${event.data}" alt="screenshot" />`;
+            }
+            return `
+          <tr>
+            <td>${event.timestamp || ""}</td>
+            <td>${event.type || ""}</td>
+            <td>${event.data || ""}</td>
+            <td>${event.window || ""}</td>
+            <td>${event.position || ""}</td>
+            <td>${screenshot}</td>
+          </tr>
+        `;
+          })
+          .join("");
+      }
+
+      loadEvents();
+      setInterval(loadEvents, 4000);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "webhook_url": "http://127.0.0.1:8000/api/input",
+  "send_interval_seconds": 5,
+  "batch_size": 25,
+  "log_dir": "logs",
+  "enable_screenshots": true,
+  "screenshot_interval_seconds": 120,
+  "debug_mode": false,
+  "tray_enabled": true,
+  "pending_cache_file": "pending_events.jsonl",
+  "screenshot_format": "png",
+  "sensitive_title_keywords": [
+    "password",
+    "login",
+    "auth",
+    "credential"
+  ],
+  "ethics_acknowledged": false
+}
