@@ -1,43 +1,50 @@
-# Personal Input Tracker & Logger
+Here you go — versi Inggris yang lebih ringkas, clean, dan tetap profesional.
 
-A transparent, permission-based desktop assistant that records keyboard and mouse activity, stores it locally in JSON, and forwards batches to a configurable webhook/server for dashboards and auditing.
+⸻
 
-> ⚠️ **Etika & Privasi** — Gunakan aplikasi ini hanya pada perangkat dan akun milik sendiri atau dengan izin tertulis dari pemiliknya. Jangan gunakan untuk memata-matai, mencuri data, atau tindakan melawan hukum. Aplikasi tidak berjalan secara stealth; GUI selalu terlihat dan terdapat peringatan etika saat awal dijalankan.
+Personal Input Tracker & Logger
 
-## Fitur Utama
+A transparent, permission-based desktop assistant that records keyboard and mouse input, stores it locally, and optionally sends batches to a custom webhook/server for dashboards and auditing.
 
-- Perekaman real-time keyboard & mouse via `pynput` (karakter, tombol khusus, klik, scroll)
-- Metadata lengkap: timestamp UTC, judul jendela aktif, posisi kursor, delta scroll
-- Filter jendela sensitif berdasar kata kunci (default: password/login/auth/credential)
-- Logging modular: JSONL lokal + pengiriman batch ke webhook HTTP
-- Antrian dan retry otomatis; penyimpanan sementara saat server tidak tersedia
-- GUI modern berbasis `tkinter` + opsi tray (pystray) dengan kontrol Mulai/Jeda, statistik kirim, serta tombol buka folder log
-- Mode debug untuk melihat event di terminal
-- Opsi screenshot berkala (mss/pyautogui) yang turut dikirim ke server
-- Konfigurasi tersentral di `config.json`
-- Server FastAPI sederhana + dashboard HTML + SQLite storage + Basic Auth opsional
-- Instruksi packaging PyInstaller untuk distribusi Windows/macOS/Linux
+⚠️ Ethics & Privacy — Use this tool only on devices/accounts you own or have written permission to monitor. This app is not stealthy; the GUI is always visible and shows an ethics warning at startup.
 
-## Kebutuhan Sistem
+⸻
 
-- Python 3.10+
-- Dependencies di `requirements.txt`
-- Desktop environment (pynput & pyautogui membutuhkan akses GUI, bukan headless)
+Key Features
+	•	Real-time keyboard & mouse capture using pynput
+	•	Full metadata: UTC timestamp, active window title, cursor position, scroll delta
+	•	Sensitive-window filtering by keywords (password/login/auth/etc.)
+	•	Local JSONL logging + batch HTTP upload to a webhook
+	•	Queueing & retry system with offline cache
+	•	Modern tkinter GUI + optional tray controls (start/pause, stats, open log folder)
+	•	Debug mode for terminal event output
+	•	Optional periodic screenshots (mss / pyautogui)
+	•	Central config via config.json
+	•	Lightweight FastAPI server + HTML dashboard + SQLite
+	•	PyInstaller packaging instructions for Windows/macOS/Linux
 
-## Instalasi
+⸻
 
-```fish
+Requirements
+	•	Python 3.10+
+	•	GUI-enabled OS (required by pynput & pyautogui)
+
+⸻
+
+Installation
+
 python -m venv .venv
 source .venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
-```
 
-## Konfigurasi
 
-Pada run pertama, `config.json` otomatis dibuat dari default `config.DEFAULT_CONFIG`. Contoh isi:
+⸻
 
-```json
+Configuration
+
+A config.json file is generated on first run. Example:
+
 {
   "webhook_url": "http://127.0.0.1:8000/api/input",
   "send_interval_seconds": 5,
@@ -52,95 +59,71 @@ Pada run pertama, `config.json` otomatis dibuat dari default `config.DEFAULT_CON
   "sensitive_title_keywords": ["password", "login", "auth", "credential"],
   "ethics_acknowledged": false
 }
-```
 
-Ubah sesuai kebutuhan. Pastikan folder `log_dir` dapat ditulis.
 
-## Menjalankan Aplikasi Desktop
+⸻
 
-```fish
+Running the Desktop App
+
 source .venv/bin/activate
 python main.py
-```
 
-Kontrol utama:
+Main controls: Start/Pause, Open Logs, Exit
 
-- **Mulai/Jeda**: memulai atau menghentikan perekaman & pengiriman
-- **Buka Log**: membuka folder log lokal
-- **Keluar**: menutup aplikasi (dan menghentikan listener)
+Debug Mode
 
-### Mode Debug
+Enable "debug_mode": true to print events in the terminal.
 
-Aktifkan `"debug_mode": true` di `config.json` untuk mencetak event ke terminal.
+Screenshots
 
-### Screenshot Opsional
+Set "enable_screenshots": true to capture periodic screenshots.
 
-Set `"enable_screenshots": true` untuk memicu capture berkala. Pastikan minimal salah satu backend tersedia:
+⸻
 
-- [`mss`](https://github.com/BoboTiG/python-mss) (default, multi-platform)
-- [`pyautogui`](https://pyautogui.readthedocs.io/)
+FastAPI Server
 
-## Server FastAPI
+Start the server:
 
-Server menerima webhook, menyimpan ke SQLite, dan menyediakan dashboard HTML sederhana.
-
-```fish
-source .venv/bin/activate
 uvicorn server:APP --reload --host 0.0.0.0 --port 8000
-```
 
-### Lingkungan Opsional
+Optional env vars:
+	•	TRACKER_DASH_USER / TRACKER_DASH_PASS — enable Basic Auth
+	•	DB_PATH — custom SQLite path
 
-- `TRACKER_DASH_USER` & `TRACKER_DASH_PASS`: mengaktifkan Basic Auth di dashboard (`/`)
-- `DB_PATH`: ubah lokasi SQLite (default `tracker.db`)
+Endpoints:
+	•	POST /api/input — receive { "events": [...] }
+	•	GET /api/events?limit=50 — recent events
+	•	GET / — auto-refresh dashboard
 
-### Endpoint
+⸻
 
-- `POST /api/input` — terima payload `{ "events": [...] }`
-- `GET /api/events?limit=50` — JSON event terbaru
-- `GET /` — dashboard HTML (auto-refresh)
+Packaging (PyInstaller)
 
-## Packaging ke Executable
-
-1. Pastikan virtual environment sudah terpasang dependency GUI (tkinter sudah termasuk di Python standar).
-2. Jalankan PyInstaller (contoh Windows, ganti `--onefile`/`--windowed` sesuai kebutuhan):
-
-```fish
-source .venv/bin/activate
 pyinstaller --onefile --windowed --name InputTracker main.py
-```
 
-3. Sertakan `config.json`, `requirements.txt`, dan README ketika mendistribusikan.
-4. Untuk macOS `.app` atau Linux AppImage, gunakan opsi PyInstaller yang relevan (`--target-architecture`, dll).
+Include config.json, requirements.txt, and README when distributing.
 
-## Struktur Proyek
+⸻
 
-```
-main.py               # Entry point
-config.py             # Loader/saver konfigurasi
-logger.py             # Listener keyboard & mouse
-sender.py             # Pengiriman HTTP + retry/pending cache
-screenshot.py         # Opsional capture screenshot
-storage.py            # JSONL logger lokal
-utils.py              # Helper timestamp, window title, chunker
-gui.py                # Antarmuka tkinter + tray
-server.py             # FastAPI receiver + dashboard
-templates/            # Dashboard HTML
-```
+Project Structure
 
-## Logging & Troubleshooting
+main.py
+config.py
+logger.py
+sender.py
+screenshot.py
+storage.py
+utils.py
+gui.py
+server.py
+templates/
 
-- Log aplikasi disalurkan ke stdout; aktifkan `debug_mode` untuk detail event
-- File event lokal: `<log_dir>/events.jsonl`
-- Pending queue: `<log_dir>/pending_events.jsonl`
-- Gunakan `python -m compileall .` untuk deteksi error sintaks cepat
 
-## Pengembangan Lanjutan
+⸻
 
-- Tambahkan autentikasi token pada webhook
-- Integrasi storage lain (PostgreSQL, cloud queue)
-- Ekstensi plugin (misalnya analitik kelas aktivitas)
+Troubleshooting
+	•	Enable debug mode for detailed logs
+	•	Local events stored in logs/events.jsonl
+	•	Pending queue stored in logs/pending_events.jsonl
 
-## Lisensi
-
-Proyek ini ditujukan untuk pembelajaran/monitoring pribadi. Pastikan mematuhi hukum dan regulasi privasi setempat.
+⸻
